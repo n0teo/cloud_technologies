@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  app:
+    image: nginx:stable
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx-data:/usr/share/nginx/html:ro
+    networks:
+      - isolated_app
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - isolated_db
+
+networks:
+  isolated_app:
+    driver: bridge
+  isolated_db:
+    driver: bridge
